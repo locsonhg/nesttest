@@ -1,0 +1,102 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  userId    Int    @id @default(autoincrement())
+  userName  String @unique
+  password  String
+  email     String @unique
+  name      String
+  phone     String?
+  age       Int?
+  posts     Post[]
+  comments  Comment[]
+  roleGroup RoleGroup? @relation(fields: [roleGroupId], references: [roleGroupId]) // Thêm quan hệ tới RoleGroup
+  roleGroupId Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  profile   Profile?
+}
+
+model Post {
+  postId       Int    @id @default(autoincrement())
+  title        String
+  content      String
+  published    Boolean @default(false)
+  author       User    @relation(fields: [accountId], references: [userId])
+  accountId    Int
+  categories   Category[]
+  comment      Comment[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+}
+
+model Comment {
+  commentId    Int    @id @default(autoincrement())
+  content      String
+  post         Post   @relation(fields: [postId], references: [postId])
+  postId       Int
+  author       User   @relation(fields: [accountId], references: [userId])
+  accountId    Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+}
+
+model Category {
+  categoryId   Int    @id @default(autoincrement())
+  name         String
+  description  String?
+  posts        Post[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+}
+
+model Profile {
+  profileId    Int    @id @default(autoincrement())
+  bio          String?
+  user         User   @relation(fields: [userId], references: [userId])
+  userId       Int    @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+}
+
+model Role {
+  roleId       Int    @id @default(autoincrement())
+  name         String @unique
+  description  String?
+  roleGroups   RoleGroup_Roles[]  // Thêm quan hệ ngược với RoleGroup_Roles
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model RoleGroup {
+  roleGroupId  Int    @id @default(autoincrement())
+  name         String @unique
+  description  String?
+  users        User[]
+  roles        RoleGroup_Roles[]  // Quan hệ nhiều-nhiều với Role thông qua bảng RoleGroup_Roles
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model RoleGroup_Roles {
+  roleGroup_RoleId Int @id @default(autoincrement())
+  roleGroupId Int
+  roleId Int
+  roleGroup RoleGroup @relation(fields: [roleGroupId], references: [roleGroupId], onDelete: Cascade)
+  role      Role      @relation(fields: [roleId], references: [roleId], onDelete: Cascade)
+  @@unique([roleGroupId, roleId])  // Đảm bảo rằng một nhóm quyền không thể có quyền trùng lặp
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

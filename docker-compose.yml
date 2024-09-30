@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  api:
+    container_name: facebook-clone
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '4000:4000'
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - mysql_db
+
+  mysql_db:
+    image: mysql:8
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: Kmnkmn123@
+      MYSQL_DATABASE: databasetest
+    ports:
+      - '3306:3306'
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
