@@ -31,7 +31,7 @@ async function bootstrap() {
   // app.useGlobalGuards(new JwtAuthGuard(app.get(JwtService)));
 
   // Sử dụng middleware logger
-  app.use(logger);
+  // app.use(logger);
 
   // Cài đặt ValidationPipe cho từng request
   app.useGlobalPipes(

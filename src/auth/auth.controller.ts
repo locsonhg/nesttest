@@ -1,11 +1,19 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { LoginUserDto, ResgisterUserDto } from 'src/auth/dtos/auth.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OptionalJwtAuthGuard } from 'src/guards/optionaJwt.guard';
+import { loggingInterceptor } from 'src/interceptor/logging.interceptor';
 
-@ApiTags('Tài khoản')
+@ApiTags('Auth')
 @Controller('auth')
+@UseInterceptors(loggingInterceptor)
 export class AuthController {
   constructor(private authService: AuthService) {}
 

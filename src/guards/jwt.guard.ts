@@ -15,7 +15,7 @@ export class JwtAuthGuard implements CanActivate {
     const authHeader = request.headers.authorization;
 
     if (!authHeader) {
-      throw new UnauthorizedException('Authorization header không tồn tại');
+      throw new UnauthorizedException('Bạn chưa đăng nhập');
     }
 
     const token = authHeader.split(' ')[1];

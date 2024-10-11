@@ -1,4 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import {
   IsEmail,
@@ -39,8 +40,11 @@ export class ResgisterUserDto {
 }
 
 export class LoginUserDto {
+  @ApiProperty({ example: 'locsonhg', description: 'Tên đăng nhập' })
   @IsNotEmpty({ message: 'Tên đăng nhập không được để trống' })
   userName: string;
+
+  @ApiProperty({ example: '123456', description: 'Mật khẩu' })
   @IsNotEmpty({ message: 'Mật khẩu không được để trống' })
   password: string;
 }

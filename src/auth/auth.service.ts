@@ -49,11 +49,7 @@ export class AuthService {
       return res;
     } catch (err) {
       // Ném lại ngoại lệ nếu có lỗi khi tạo người dùng
-      console.log(err);
-      throw new HttpException(
-        'Lỗi khi tạo người dùng',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   };
 
