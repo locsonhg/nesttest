@@ -10,8 +10,8 @@ import {
   LoginUserDto,
   LoginUserDtoSuccess,
   ResgisterUserDto,
-} from 'src/auth/dtos/auth.dto'; // Sửa từ Resgister thành Register
-import { JwtAuthService } from 'src/auth/jwtAuth.service';
+} from 'src/module/auth/dtos/auth.dto'; // Sửa từ Resgister thành Register
+import { JwtAuthService } from 'src/module/auth/jwtAuth.service';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()

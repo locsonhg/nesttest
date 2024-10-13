@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AuthModule } from 'src/auth/auth.module';
-import { UserModule } from 'src/user/user.module';
+import { AuthModule } from 'src/module/auth/auth.module';
+import { CategoryModule } from 'src/module/category/category.module';
+import { UserModule } from 'src/module/user/user.module';
 
 // nơi tập trung các module
 @Module({
-  imports: [AuthModule, UserModule],
+  imports: [AuthModule, UserModule, CategoryModule],
 })
 export class AppModule {}

@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { JwtAuthService } from 'src/auth/jwtAuth.service';
+import { JwtAuthService } from 'src/module/auth/jwtAuth.service';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { PrismaService } from 'src/prisma.service';
-import { UserController } from 'src/user/user.controller';
-import { UserService } from 'src/user/user.service';
+import { UserController } from 'src/module/user/user.controller';
+import { UserService } from 'src/module/user/user.service';
+import { PasswordService } from 'src/services/hashPassword.service';
 
 @Module({
   controllers: [UserController],
@@ -14,6 +15,7 @@ import { UserService } from 'src/user/user.service';
     JwtAuthGuard,
     JwtService,
     JwtAuthService,
+    PasswordService,
   ],
 })
 export class UserModule {}

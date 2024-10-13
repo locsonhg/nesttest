@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { AppModule } from 'src/app.module';
-import { logger } from 'src/middleware/logger.middleware';
 import { json, urlencoded } from 'body-parser';
 
 async function bootstrap() {

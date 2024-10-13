@@ -1,11 +1,18 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma.service';
-import { CreateUserDto, CreateUserResponseDto } from 'src/user/dtos/user.dto';
+import {
+  CreateUserDto,
+  CreateUserResponseDto,
+} from 'src/module/user/dtos/user.dto';
+import { PasswordService } from 'src/services/hashPassword.service';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private passwordService: PasswordService,
+  ) {}
 
   // tạo mới người dùng
   createUser = async (
@@ -23,7 +30,10 @@ export class UserService {
 
     // tạo 1 người dùng mới vào database
     const create = await this.prisma.user.create({
-      data: payload,
+      data: {
+        ...payload,
+        password: await this.passwordService.hashPassword(payload.password),
+      },
     });
 
     return {
@@ -49,13 +59,25 @@ export class UserService {
     return user;
   }
 
-  // lấy tất cả thông tin người dùng
-  async getAllUser(): Promise<User[]> {
-    // chỉ lấy những tài khoản chưa đuợc xoá
+  // lấy tất cả thông tin người dùng với phân trang và tìm kiếm theo tên
+  async getAllUser(
+    currentPage: number,
+    pageSize: number,
+    keySearch: string,
+  ): Promise<User[]> {
+    const skip = (currentPage - 1) * pageSize;
+    const take = pageSize;
+
+    // chỉ lấy những tài khoản chưa đuợc xoá và tìm kiếm theo tên
     return await this.prisma.user.findMany({
       where: {
         deletedAt: null,
+        name: {
+          contains: keySearch.trim() || '',
+        },
       },
+      skip,
+      take,
     });
   }
 
@@ -73,7 +95,10 @@ export class UserService {
       where: {
         userId: body.userId,
       },
-      data: body,
+      data: {
+        ...body,
+        password: await this.passwordService.hashPassword(body.password),
+      },
     });
     return {
       message: 'Cập nhật người dùng thành công',

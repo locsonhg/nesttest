@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -14,8 +15,12 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
-import { CreateUserDto, CreateUserResponseDto } from 'src/user/dtos/user.dto';
-import { UserService } from 'src/user/user.service';
+import {
+  CreateUserDto,
+  CreateUserResponseDto,
+} from 'src/module/user/dtos/user.dto';
+import { UserService } from 'src/module/user/user.service';
+import { ENUM_PAGINATION } from 'src/utils/enum/defautl.enum';
 
 @ApiTags('User')
 @ApiBearerAuth() // Thêm thông tin xác thực Bearer
@@ -26,8 +31,12 @@ export class UserController {
 
   @Get('all')
   @ApiOperation({ summary: 'Danh sách người dùng' })
-  getAllUser() {
-    return this.userService.getAllUser();
+  getAllUser(
+    @Query('currentPage') currentPage: number = ENUM_PAGINATION.DEFAULT_PAGE,
+    @Query('pageSize') pageSize: number = ENUM_PAGINATION.DEFAULT_PAGE_SIZE,
+    @Query('keySearch') keySearch?: string,
+  ) {
+    return this.userService.getAllUser(currentPage, pageSize, keySearch);
   }
 
   @Post('add')
