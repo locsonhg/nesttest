@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { CategoryService } from 'src/module/category/category.service';
 import { CategoryDto } from 'src/module/category/dto/category.dto';
+import { GetAllCategoryQueryDto } from 'src/module/category/dto/queryCategory.dto';
 import { ENUM_PAGINATION } from 'src/utils/enum/defautl.enum';
 
 @ApiTags('Category')
@@ -14,21 +15,29 @@ export class CategoryController {
 
   @Post('add')
   @ApiOperation({ summary: 'Thêm mới thể loại' })
-  async createCategory(@Body() payload: CategoryDto): Promise<CategoryDto> {
+  async createCategory(@Body() payload: CategoryDto) {
     return await this.categoryService.createCategory(payload);
   }
 
-  @Get()
+  @Get('all')
   @ApiOperation({ summary: 'Lấy danh sách thể loại' })
-  async getAllCategory(
-    @Query('currentPage') currentPage: number = ENUM_PAGINATION.DEFAULT_PAGE, // Mặc định là trang 1
-    @Query('pageSize') pageSize: number = ENUM_PAGINATION.DEFAULT_PAGE_SIZE, // Mặc định là 10 mục mỗi trang
-    @Query('keySearch') keySearch?: string,
-  ): Promise<CategoryDto[]> {
+  async getAllCategory(@Query() query: GetAllCategoryQueryDto) {
+    const {
+      currentPage = ENUM_PAGINATION.DEFAULT_PAGE,
+      pageSize = ENUM_PAGINATION.DEFAULT_PAGE_SIZE,
+      keySearch,
+    } = query;
+
     return await this.categoryService.getAllCategory(
-      currentPage,
-      pageSize,
+      Number(currentPage),
+      Number(pageSize),
       keySearch,
     );
+  }
+
+  @Post('update')
+  @ApiOperation({ summary: 'Cập nhật thông tin thể loại' })
+  async updateCategory(@Body() payload: CategoryDto) {
+    return await this.categoryService.updateCategory(payload);
   }
 }
