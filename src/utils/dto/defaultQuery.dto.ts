@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
-import { ENUM_PAGINATION } from 'src/utils/enum/defautl.enum';
+import { ENUM_PAGINATION } from '../enum/defautl.enum';
 
-export class GetAllCategoryQueryDto {
+export class DefaultQueryDto {
   @ApiProperty({
     required: false, // không bắt buộc
     default: ENUM_PAGINATION.DEFAULT_PAGE, // giá trị mặc định

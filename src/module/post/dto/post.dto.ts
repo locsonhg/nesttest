@@ -1,26 +1,61 @@
-import { IsNotEmpty } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsOptional, IsBoolean, IsInt } from 'class-validator';
 
 export class PostDto {
-  @IsNotEmpty()
+  @ApiProperty({
+    example: 1,
+    description: 'ID bài viết',
+  })
+  @IsOptional() // Cho phép bỏ qua ID bài viết
+  postId: number;
+
+  @ApiProperty({ example: 'Tiêu đề bài viết', description: 'Tiêu đề bài viết' })
+  @IsOptional() // Optional cho phép trường này không bắt buộc
   title: string;
 
+  @ApiProperty({
+    example: 'Nội dung bài viết',
+    description: 'Nội dung bài viết',
+  })
   @IsNotEmpty()
   content: string;
 
+  @ApiProperty({
+    example: true,
+    description: 'Bài viết ở trạng thái công khai',
+  })
+  @IsBoolean() // Kiểm tra giá trị boolean
   @IsNotEmpty()
   published: boolean;
 
+  @ApiProperty({
+    example: 1,
+    description: 'ID tài khoản',
+  })
+  @IsInt() // Đảm bảo rằng ID là số nguyên
   @IsNotEmpty()
   accountId: number;
 
-  @IsNotEmpty()
+  @ApiProperty({
+    example: [1, 2, 3],
+    description: 'Danh sách thể loại',
+  })
+  @IsOptional() // Cho phép bỏ qua danh sách thể loại
   categories: number[];
 
+  @ApiProperty({
+    example: [1, 2, 3],
+    description: 'Danh sách bình luận',
+  })
+  @IsOptional() // Cho phép bỏ qua danh sách bình luận
   comment: number[];
 
+  @IsOptional() // Không cần nhập thời gian tạo
   createdAt: Date;
 
+  @IsOptional() // Không cần nhập thời gian cập nhật
   updatedAt: Date;
 
+  @IsOptional() // Có thể bỏ qua thời gian xóa
   deletedAt?: Date;
 }

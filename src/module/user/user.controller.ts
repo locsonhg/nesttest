@@ -20,6 +20,7 @@ import {
   CreateUserResponseDto,
 } from 'src/module/user/dtos/user.dto';
 import { UserService } from 'src/module/user/user.service';
+import { DefaultQueryDto } from 'src/utils/dto/defaultQuery.dto';
 import { ENUM_PAGINATION } from 'src/utils/enum/defautl.enum';
 
 @ApiTags('User')
@@ -31,12 +32,17 @@ export class UserController {
 
   @Get('all')
   @ApiOperation({ summary: 'Danh sách người dùng' })
-  getAllUser(
-    @Query('currentPage') currentPage: number = ENUM_PAGINATION.DEFAULT_PAGE,
-    @Query('pageSize') pageSize: number = ENUM_PAGINATION.DEFAULT_PAGE_SIZE,
-    @Query('keySearch') keySearch?: string,
-  ) {
-    return this.userService.getAllUser(currentPage, pageSize, keySearch);
+  getAllUser(@Query() query: DefaultQueryDto) {
+    const {
+      currentPage = ENUM_PAGINATION.DEFAULT_PAGE,
+      pageSize = ENUM_PAGINATION.DEFAULT_PAGE_SIZE,
+      keySearch,
+    } = query;
+    return this.userService.getAllUser(
+      Number(currentPage),
+      Number(pageSize),
+      keySearch,
+    );
   }
 
   @Post('add')

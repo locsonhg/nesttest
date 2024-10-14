@@ -1,9 +1,17 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { CategoryService } from 'src/module/category/category.service';
 import { CategoryDto } from 'src/module/category/dto/category.dto';
-import { GetAllCategoryQueryDto } from 'src/module/category/dto/queryCategory.dto';
+import { DefaultQueryDto } from 'src/utils/dto/defaultQuery.dto';
 import { ENUM_PAGINATION } from 'src/utils/enum/defautl.enum';
 
 @ApiTags('Category')
@@ -21,7 +29,7 @@ export class CategoryController {
 
   @Get('all')
   @ApiOperation({ summary: 'Lấy danh sách thể loại' })
-  async getAllCategory(@Query() query: GetAllCategoryQueryDto) {
+  async getAllCategory(@Query() query: DefaultQueryDto) {
     const {
       currentPage = ENUM_PAGINATION.DEFAULT_PAGE,
       pageSize = ENUM_PAGINATION.DEFAULT_PAGE_SIZE,
@@ -39,5 +47,11 @@ export class CategoryController {
   @ApiOperation({ summary: 'Cập nhật thông tin thể loại' })
   async updateCategory(@Body() payload: CategoryDto) {
     return await this.categoryService.updateCategory(payload);
+  }
+
+  @Post('delete')
+  @ApiOperation({ summary: 'Xóa thể loại' })
+  async deleteCategory(@Param('id') id: string) {
+    return await this.categoryService.deleteCategory(Number(id));
   }
 }
