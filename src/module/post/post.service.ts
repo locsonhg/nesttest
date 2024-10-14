@@ -6,6 +6,7 @@ import {
   TypeResponseSuccess,
 } from 'src/utils/types/typeRespone';
 import { Post } from '@prisma/client';
+import { HandleUrlImageService } from 'src/services/handleUrlImage.service';
 
 @Injectable()
 export class PostService {
@@ -14,6 +15,7 @@ export class PostService {
   // Tạo mới bài viết
   async createPost(
     payload: PostDto,
+    imagePaths: string[],
   ): Promise<TypeResponseSuccess<Post> | TypeResponseError> {
     try {
       // Tạo mới bài viết, kết hợp với danh sách thể loại và bình luận (nếu có)
@@ -23,6 +25,7 @@ export class PostService {
           content: payload.content,
           published: payload.published,
           accountId: payload.accountId, // ID người tạo bài viết
+          images: HandleUrlImageService.formatImagePaths(imagePaths), // Đường dẫn ảnh
 
           // Liên kết với các thể loại (nếu có)
           categories: payload.categories?.length

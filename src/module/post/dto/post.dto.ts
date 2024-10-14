@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsBoolean, IsInt } from 'class-validator';
 
 export class PostDto {
@@ -8,6 +9,13 @@ export class PostDto {
   })
   @IsOptional() // Cho phép bỏ qua ID bài viết
   postId: number;
+
+  @ApiProperty({
+    example: 'Ảnh đại diện',
+    description: 'Ảnh đại diện bài viết',
+  })
+  @IsOptional() // Cho phép bỏ qua ảnh đại diện
+  images: string;
 
   @ApiProperty({ example: 'Tiêu đề bài viết', description: 'Tiêu đề bài viết' })
   @IsOptional() // Optional cho phép trường này không bắt buộc
@@ -24,16 +32,15 @@ export class PostDto {
     example: true,
     description: 'Bài viết ở trạng thái công khai',
   })
-  @IsBoolean() // Kiểm tra giá trị boolean
+  @IsBoolean()
   @IsNotEmpty()
+  @Transform(({ value }) => value === 'true' || value === true) // Chuyển đổi giá trị về boolean
   published: boolean;
 
-  @ApiProperty({
-    example: 1,
-    description: 'ID tài khoản',
-  })
-  @IsInt() // Đảm bảo rằng ID là số nguyên
+  @ApiProperty({ example: 1, description: 'ID tài khoản' })
+  @IsInt()
   @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value, 10)) // Chuyển đổi chuỗi về số nguyên
   accountId: number;
 
   @ApiProperty({

@@ -3,10 +3,17 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { AppModule } from 'src/app.module';
 import { json, urlencoded } from 'body-parser';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
+  });
+
+  // Cấu hình phục vụ tệp tĩnh
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads/', // Cấu hình prefix để truy cập
   });
 
   const config = new DocumentBuilder()
