@@ -7,6 +7,7 @@ import {
   Param,
   UseInterceptors,
   UploadedFiles,
+  Request,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -25,12 +26,11 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 
 @ApiTags('Post')
-@ApiBearerAuth() // thêm thông tin xác thực Bearer tại swagger
-@UseGuards(JwtAuthGuard) // Xác thực tài khoản bằng JWT
 @Controller('post')
 export class PostController {
   constructor(private postService: PostService) {}
-
+  @ApiBearerAuth() // thêm thông tin xác thực Bearer tại swagger
+  @UseGuards(JwtAuthGuard) // Xác thực tài khoản bằng JWT
   @Post('add')
   @ApiOperation({ summary: 'Thêm mới bài viết với ảnh' })
   @ApiConsumes('multipart/form-data')
@@ -84,8 +84,9 @@ export class PostController {
 
   @Post('update')
   @ApiOperation({ summary: 'Cập nhật thông tin bài viết' })
-  async updatePost(@Body() payload: PostDto) {
-    return await this.postService.updatePost(payload);
+  async updatePost(@Body() payload: PostDto, @Request() req: any) {
+    const userId = req.userId; // Lấy userId từ request
+    return await this.postService.updatePost(payload, userId);
   }
 
   @Post('delete')

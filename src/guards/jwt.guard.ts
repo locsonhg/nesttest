@@ -29,6 +29,7 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     request.user = decoded; // Lưu thông tin người dùng vào request
+    request.userId = decoded.userId; // Lưu userId vào request
     return true; // Cho phép truy cập
   }
 }

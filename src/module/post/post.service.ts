@@ -89,8 +89,19 @@ export class PostService {
   // Cập nhật bài viết theo ID
   async updatePost(
     payload: PostDto,
+    userId: number,
   ): Promise<TypeResponseSuccess<Post> | TypeResponseError> {
     try {
+      // Kiểm tra quyền sở hữu bài viết
+      const post = await this.prisma.post.findUnique({
+        where: { postId: payload.postId },
+      });
+      if (!post || post.accountId !== userId) {
+        return {
+          message: 'Bạn không có quyền cập nhật bài viết này!',
+          status: 403,
+        };
+      }
       const updatedPost = await this.prisma.post.update({
         where: { postId: payload.postId },
         data: {
