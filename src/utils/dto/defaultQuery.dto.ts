@@ -29,3 +29,9 @@ export class DefaultQueryDto {
   @IsString()
   keySearch?: string;
 }
+
+export interface IDefaultQuery {
+  currentPage?: number;
+  pageSize?: number;
+  keySearch?: string;
+}

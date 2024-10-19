@@ -8,6 +8,7 @@ import {
   UseInterceptors,
   UploadedFiles,
   Request,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -24,6 +25,9 @@ import { extname } from 'path';
 import { File as MulterFile } from 'multer';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
+import { ENUM_PAGINATION } from 'src/utils/enum/defautl.enum';
+import { PostQueryDto } from './dto/postQuery.dto';
+import { CreatePostDto } from './dto/create.dto';
 
 @ApiTags('Post')
 @Controller('post')
@@ -34,26 +38,7 @@ export class PostController {
   @Post('add')
   @ApiOperation({ summary: 'Thêm mới bài viết với ảnh' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        postId: { type: 'integer' },
-        title: { type: 'string' },
-        content: { type: 'string' },
-        published: { type: 'boolean' },
-        accountId: { type: 'integer' },
-        categories: { type: 'array', items: { type: 'integer' } },
-        images: {
-          type: 'array',
-          items: {
-            type: 'string',
-            format: 'binary',
-          },
-        },
-      },
-    },
-  })
+  @ApiBody({ type: CreatePostDto })
   @UseInterceptors(
     FilesInterceptor('images', 10, {
       storage: diskStorage({
@@ -67,19 +52,37 @@ export class PostController {
   )
   async createPost(
     @UploadedFiles() files: Array<MulterFile>, // Nhận file ảnh
-    @Body() postDto: PostDto,
+    @Body() createPostDto: CreatePostDto & PostDto,
   ) {
     // Lấy danh sách đường dẫn ảnh đã upload
     const imagePaths = files.map((file) => file.path);
 
-    // Gửi dữ liệu bài viết và đường dẫn ảnh tới service
-    return await this.postService.createPost(postDto, imagePaths);
+    if (typeof createPostDto.categories === 'string') {
+      createPostDto.categories = createPostDto.categories
+        .split(',')
+        .map(Number)
+        .filter(Number.isInteger);
+    }
+    return await this.postService.createPost(createPostDto, imagePaths);
   }
 
   @Get('all')
   @ApiOperation({ summary: 'Lấy danh sách bài viết' })
-  async getAllPost() {
-    return await this.postService.getAllPosts();
+  async getAllPost(@Query() query: PostQueryDto) {
+    const {
+      currentPage = ENUM_PAGINATION.DEFAULT_PAGE,
+      pageSize = ENUM_PAGINATION.DEFAULT_PAGE_SIZE,
+      keySearch,
+      categoryId,
+      accountId,
+    } = query;
+    return await this.postService.getAllPosts({
+      currentPage: Number(currentPage),
+      pageSize: Number(pageSize),
+      keySearch,
+      categoryId: Number(categoryId),
+      accountId: Number(accountId),
+    });
   }
 
   @Post('update')

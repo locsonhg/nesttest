@@ -7,43 +7,42 @@ import {
 } from 'src/utils/types/typeRespone';
 import { Post } from '@prisma/client';
 import { HandleUrlImageService } from 'src/services/handleUrlImage.service';
+import { CheckAuthorPostService } from 'src/services/checkAuthorPost.service';
+import { IDefaultQuery } from 'src/utils/dto/defaultQuery.dto';
+import { CreatePostDto } from './dto/create.dto';
 
 @Injectable()
 export class PostService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private checkAuthorPostService: CheckAuthorPostService, // Thêm service kiểm tra quyền sở hữu bài viết
+  ) {}
 
   // Tạo mới bài viết
   async createPost(
-    payload: PostDto,
+    payload: CreatePostDto,
     imagePaths: string[],
   ): Promise<TypeResponseSuccess<Post> | TypeResponseError> {
     try {
-      // Tạo mới bài viết, kết hợp với danh sách thể loại và bình luận (nếu có)
       const newPost = await this.prisma.post.create({
         data: {
           title: payload.title,
           content: payload.content,
-          published: payload.published,
-          accountId: payload.accountId, // ID người tạo bài viết
-          images: HandleUrlImageService.formatImagePaths(imagePaths), // Đường dẫn ảnh
-
-          // Liên kết với các thể loại (nếu có)
-          categories: payload.categories?.length
-            ? {
-                connect: payload.categories.map((categoryId) => ({
-                  categoryId, // Sử dụng categoryId từ payload
-                })),
-              }
-            : undefined,
-
-          // Liên kết với các bình luận (nếu có)
-          comment: payload.comment?.length
-            ? {
-                connect: payload.comment.map((commentId) => ({
-                  commentId, // Sử dụng commentId từ payload
-                })),
-              }
-            : undefined,
+          published: payload.published === 'true',
+          accountId: Number(payload.accountId),
+          images: HandleUrlImageService.formatImagePaths(imagePaths),
+          categories:
+            Array.isArray(payload.categories) && payload.categories.length
+              ? {
+                  connect: payload.categories.map((categoryId) => ({
+                    categoryId,
+                  })),
+                }
+              : undefined,
+        },
+        include: {
+          categories: true,
+          author: true,
         },
       });
 
@@ -61,16 +60,45 @@ export class PostService {
   }
 
   // Lấy danh sách bài viết
-  async getAllPosts(): Promise<
-    TypeResponseSuccess<Post[]> | TypeResponseError
-  > {
+  async getAllPosts(
+    query: IDefaultQuery & {
+      categoryId?: number;
+      accountId?: number;
+    },
+  ): Promise<TypeResponseSuccess<Post[]> | TypeResponseError> {
     try {
+      // Tạo đối tượng where để xây dựng các điều kiện lọc
+      const where: any = {};
+
+      // Thêm điều kiện cho accountId nếu có
+      if (query.accountId) {
+        where.accountId = query.accountId;
+      }
+
+      // Thêm điều kiện cho title nếu có
+      if (query.keySearch?.trim()) {
+        where.title = { contains: query.keySearch.trim() };
+      }
+
+      // Thêm điều kiện cho categories nếu có
+      if (query.categoryId) {
+        where.categories = {
+          some: {
+            categoryId: query.categoryId,
+          },
+        };
+      }
+
       const posts = await this.prisma.post.findMany({
+        skip: (query.currentPage - 1) * query.pageSize,
+        take: query.pageSize,
+        where, // Sử dụng đối tượng where đã xây dựng
         include: {
           author: true, // Bao gồm thông tin tác giả
           categories: true, // Bao gồm danh sách các thể loại
           comment: true, // Bao gồm danh sách các bình luận
         },
+        orderBy: { createdAt: 'desc' },
       });
 
       return {
@@ -93,15 +121,15 @@ export class PostService {
   ): Promise<TypeResponseSuccess<Post> | TypeResponseError> {
     try {
       // Kiểm tra quyền sở hữu bài viết
-      const post = await this.prisma.post.findUnique({
-        where: { postId: payload.postId },
-      });
-      if (!post || post.accountId !== userId) {
+      if (
+        !this.checkAuthorPostService.checkAuthorPost(payload.postId, userId)
+      ) {
         return {
           message: 'Bạn không có quyền cập nhật bài viết này!',
           status: 403,
         };
       }
+
       const updatedPost = await this.prisma.post.update({
         where: { postId: payload.postId },
         data: {
