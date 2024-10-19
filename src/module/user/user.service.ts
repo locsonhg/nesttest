@@ -73,7 +73,7 @@ export class UserService {
       where: {
         deletedAt: null,
         name: {
-          contains: keySearch.trim() || '',
+          contains: keySearch ? keySearch.trim() : '',
         },
       },
       skip,
