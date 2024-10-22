@@ -47,13 +47,14 @@ model Comment {
   postId       Int
   author       User      @relation(fields: [accountId], references: [userId])
   accountId    Int
-  parentId     Int?
+  parentId     Int?      // Cho phép null cho bình luận gốc
   parent       Comment?  @relation("CommentReplies", fields: [parentId], references: [commentId])
   replies      Comment[] @relation("CommentReplies")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
 }
+
 
 
 model Category {
