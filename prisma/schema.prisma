@@ -41,16 +41,20 @@ model Post {
 }
 
 model Comment {
-  commentId    Int    @id @default(autoincrement())
+  commentId    Int       @id @default(autoincrement())
   content      String
-  post         Post   @relation(fields: [postId], references: [postId])
+  post         Post      @relation(fields: [postId], references: [postId])
   postId       Int
-  author       User   @relation(fields: [accountId], references: [userId])
+  author       User      @relation(fields: [accountId], references: [userId])
   accountId    Int
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  parentId     Int?
+  parent       Comment?  @relation("CommentReplies", fields: [parentId], references: [commentId])
+  replies      Comment[] @relation("CommentReplies")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
 }
+
 
 model Category {
   categoryId   Int    @id @default(autoincrement())

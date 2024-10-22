@@ -86,6 +86,8 @@ export class PostController {
   }
 
   @Post('update')
+  @ApiBearerAuth() // thêm thông tin xác thực Bearer tại swagger
+  @UseGuards(JwtAuthGuard) // Xác thực tài khoản bằng JWT
   @ApiOperation({ summary: 'Cập nhật thông tin bài viết' })
   async updatePost(@Body() payload: PostDto, @Request() req: any) {
     const userId = req.userId; // Lấy userId từ request
@@ -93,12 +95,16 @@ export class PostController {
   }
 
   @Post('delete')
+  @ApiBearerAuth() // thêm thông tin xác thực Bearer tại swagger
+  @UseGuards(JwtAuthGuard) // Xác thực tài khoản bằng JWT
   @ApiOperation({ summary: 'Xóa bài viết' })
   async deletePost(@Param('id') id: string) {
     return await this.postService.deletePost(Number(id));
   }
 
   @Get('detail/:id')
+  @ApiBearerAuth() // thêm thông tin xác thực Bearer tại swagger
+  @UseGuards(JwtAuthGuard) // Xác thực tài khoản bằng JWT
   @ApiOperation({ summary: 'Chi tiết bài viết' })
   async getPostDetail(@Param('id') id: string) {
     return await this.postService.getPostById(Number(id));
