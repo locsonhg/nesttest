@@ -49,6 +49,7 @@ export class CommentService {
       postId,
       authorComment?.name,
       content,
+      accountId,
     );
 
     return {
@@ -102,15 +103,13 @@ export class CommentService {
     const parentAuthor = parentComment.author;
     const replierName = parentAuthor.name;
 
-    console.log({
-      newSubComment,
-    });
-
     // Gửi mail thông báo cho người tạo bình luận cha
     await this.mailService.sendMailCommenterWithReplyComment(
       parentComment.commentId,
       replierName,
       content,
+      postId,
+      accountId,
     );
 
     return {

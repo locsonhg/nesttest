@@ -38,11 +38,17 @@ export class MailService {
     postId: number,
     commenterName: string,
     commentContent: string,
+    accountId: number,
   ) {
     const {
-      author: { email },
+      author: { email, userId },
       title,
     } = await this.getInforPost(postId);
+
+    // nếu tài khoản bình luận trùng với tài khoản đăng bài thì không gửi mail
+    if (accountId === userId) {
+      return;
+    }
 
     const mailOption = {
       from: this.mailNameMain,
@@ -68,7 +74,16 @@ export class MailService {
     commentId: number,
     replierName: string,
     replyContent: string,
+    postId: number,
+    accountId: number,
   ) {
+    await this.sendMailAuthorWithNewComment(
+      postId,
+      replierName,
+      replyContent,
+      accountId,
+    );
+
     // Lấy thông tin của bình luận gốc và người bình luận
     const comment = await this.prisma.comment.findFirst({
       where: { commentId },
@@ -79,6 +94,11 @@ export class MailService {
 
     if (!comment) {
       throw new Error('Không tồn tại bình luận');
+    }
+
+    // Nếu tài khoản bình luận trùng với tài khoản trả lời thì không gửi mail
+    if (comment.author.userId === accountId) {
+      return;
     }
 
     const {

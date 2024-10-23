@@ -20,6 +20,6 @@ export class CommentController {
 
   @Post('reply')
   async createReplyComment(@Body() payload: CreateReplyCommentDto) {
-    return this.commentService.createComment(payload);
+    return this.commentService.createSubComment(payload);
   }
 }
