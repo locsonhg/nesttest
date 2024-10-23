@@ -15,12 +15,12 @@ import { DefaultQueryDto } from 'src/utils/dto/defaultQuery.dto';
 import { ENUM_PAGINATION } from 'src/utils/enum/defautl.enum';
 
 @ApiTags('Category')
-@ApiBearerAuth() // thêm thông tin xác thực Bearer tại swagger
-@UseGuards(JwtAuthGuard) // Xác thực tài khoản bằng JWT
 @Controller('category')
 export class CategoryController {
   constructor(private categoryService: CategoryService) {}
 
+  @ApiBearerAuth() // thêm thông tin xác thực Bearer tại swagger
+  @UseGuards(JwtAuthGuard) // Xác thực tài khoản bằng JWT
   @Post('add')
   @ApiOperation({ summary: 'Thêm mới thể loại' })
   async createCategory(@Body() payload: CategoryDto) {
@@ -43,12 +43,16 @@ export class CategoryController {
     );
   }
 
+  @ApiBearerAuth() // thêm thông tin xác thực Bearer tại swagger
+  @UseGuards(JwtAuthGuard) // Xác thực tài khoản bằng JWT
   @Post('update')
   @ApiOperation({ summary: 'Cập nhật thông tin thể loại' })
   async updateCategory(@Body() payload: CategoryDto) {
     return await this.categoryService.updateCategory(payload);
   }
 
+  @ApiBearerAuth() // thêm thông tin xác thực Bearer tại swagger
+  @UseGuards(JwtAuthGuard) // Xác thực tài khoản bằng JWT
   @Post('delete')
   @ApiOperation({ summary: 'Xóa thể loại' })
   async deleteCategory(@Param('id') id: string) {
