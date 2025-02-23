@@ -6,7 +6,7 @@ import {
   CreateReplyCommentDto,
 } from './dto/createComment.dto';
 import { TypeResponseSuccess } from 'src/utils/types/typeRespone';
-import { Comment } from '@prisma/client';
+import { Comment } from './type/TypeCommnet';
 
 @Injectable()
 export class CommentService {
@@ -117,5 +117,29 @@ export class CommentService {
       data: newSubComment,
       status: 201,
     };
+  }
+
+  // hàm render commnet theo dạng tree bằng patientId
+  buildCommentTree(comments: Comment[]): Comment[] {
+    const commentMap: Record<number, Comment> = {};
+    const rootComments: Comment[] = [];
+
+    // Tạo bản đồ các comment theo ID
+    comments.forEach((comment) => {
+      commentMap[comment.commentId] = { ...comment, children: [] };
+    });
+
+    // Sắp xếp lại comment thành cây
+    comments.forEach((comment) => {
+      if (comment.parentId) {
+        commentMap[comment.parentId]?.children?.push(
+          commentMap[comment.commentId],
+        );
+      } else {
+        rootComments.push(commentMap[comment.commentId]);
+      }
+    });
+
+    return rootComments;
   }
 }

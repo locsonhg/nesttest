@@ -10,12 +10,15 @@ import { HandleUrlImageService } from 'src/services/handleUrlImage.service';
 import { CheckAuthorPostService } from 'src/services/checkAuthorPost.service';
 import { IDefaultQuery } from 'src/utils/dto/defaultQuery.dto';
 import { CreatePostDto } from './dto/create.dto';
+import { CommentService } from '../comment/comment.service';
+import { Post as PostType } from './type/TypePost';
 
 @Injectable()
 export class PostService {
   constructor(
     private prisma: PrismaService,
     private checkAuthorPostService: CheckAuthorPostService, // Thêm service kiểm tra quyền sở hữu bài viết
+    private commentService: CommentService, // Thêm service quản lý bình luận
   ) {}
 
   // Tạo mới bài viết
@@ -196,7 +199,7 @@ export class PostService {
   // Lấy thông tin bài viết theo ID
   async getPostById(
     postId: number,
-  ): Promise<TypeResponseSuccess<Post> | TypeResponseError> {
+  ): Promise<TypeResponseSuccess<PostType> | TypeResponseError> {
     try {
       const post = await this.prisma.post.findUnique({
         where: { postId },
@@ -207,9 +210,19 @@ export class PostService {
         },
       });
 
+      if (!post) {
+        return {
+          message: 'Không tìm thấy bài viết!',
+          status: 404,
+        };
+      }
+
+      // Chuyển comment sang dạng cây
+      const commentTree = this.commentService.buildCommentTree(post.comment);
+
       return {
         message: 'Lấy thông tin bài viết thành công!',
-        data: post,
+        data: { ...post, comment: commentTree },
         status: 200,
       };
     } catch (error) {

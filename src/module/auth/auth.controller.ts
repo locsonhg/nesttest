@@ -6,7 +6,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from 'src/module/auth/auth.service';
-import { LoginUserDto, ResgisterUserDto } from 'src/module/auth/dtos/auth.dto';
+import {
+  BodyRequestOTP,
+  BodyResetPassword,
+  LoginUserDto,
+  ResgisterUserDto,
+} from 'src/module/auth/dtos/auth.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OptionalJwtAuthGuard } from 'src/guards/optionaJwt.guard';
 import { loggingInterceptor } from 'src/interceptor/logging.interceptor';
@@ -37,5 +42,20 @@ export class AuthController {
   @UseGuards(OptionalJwtAuthGuard)
   async refresh(@Body() refreshToken: string) {
     return await this.authService.refreshAccessToken(refreshToken);
+  }
+
+  @Post('request-otp')
+  async requestOTP(@Body() body: BodyRequestOTP) {
+    return await this.authService.forgotPassword(body.email);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() payload: BodyResetPassword) {
+    const { email, otp, newPassword } = payload;
+    return await this.authService.verifyOTPAndResetPassword(
+      email,
+      otp,
+      newPassword,
+    );
   }
 }

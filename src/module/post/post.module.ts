@@ -5,6 +5,8 @@ import { PostController } from './post.controller';
 import { JwtService } from '@nestjs/jwt';
 import { JwtAuthService } from '../auth/jwtAuth.service';
 import { CheckAuthorPostService } from 'src/services/checkAuthorPost.service';
+import { CommentService } from '../comment/comment.service';
+import { MailService } from '../mail/mail.service';
 
 @Module({
   controllers: [PostController],
@@ -14,6 +16,8 @@ import { CheckAuthorPostService } from 'src/services/checkAuthorPost.service';
     JwtService,
     JwtAuthService,
     CheckAuthorPostService,
+    CommentService,
+    MailService,
   ],
 })
 export class PostModule {}

@@ -4,5 +4,6 @@ import { PrismaService } from 'src/prisma.service';
 
 @Module({
   providers: [MailService, PrismaService],
+  exports: [MailService],
 })
 export class MailModule {}

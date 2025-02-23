@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma.service';
 import {
   renderSendMailAuthorPost,
   renderSendMailCommentReply,
+  renderResetPasswordMail,
 } from './templates/sendMail';
 
 @Injectable()
@@ -124,6 +125,24 @@ export class MailService {
     } catch (error) {
       console.error('Error sending email to commenter:', error);
       throw new Error('Failed to send email to commenter');
+    }
+  }
+
+  // Hàm gửi email OTP đặt lại mật khẩu
+  async sendMailResetPassword(email: string, otp: string) {
+    const mailOption = {
+      from: this.mailNameMain,
+      to: email,
+      subject: 'Yêu cầu đặt lại mật khẩu',
+      html: renderResetPasswordMail({ otp }),
+    };
+
+    try {
+      const info = await this.transporter.sendMail(mailOption);
+      return info;
+    } catch (error) {
+      console.error('Lỗi khi gửi email đặt lại mật khẩu:', error);
+      throw new Error('Không thể gửi email đặt lại mật khẩu');
     }
   }
 }

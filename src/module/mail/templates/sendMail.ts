@@ -53,3 +53,17 @@ export const renderSendMailCommentReply = ({
     </div>
   `;
 };
+
+export function renderResetPasswordMail({ otp }: { otp: string }) {
+  return `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+      <h2 style="color: #333;">🔒 Yêu cầu đặt lại mật khẩu</h2>
+      <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu từ tài khoản của bạn.</p>
+      <p>Mã OTP của bạn là:</p>
+      <h3 style="font-size: 24px; color: #d9534f; text-align: center;">${otp}</h3>
+      <p>Mã này sẽ hết hạn trong <strong>10 phút</strong>. Nếu bạn không yêu cầu đặt lại mật khẩu, hãy bỏ qua email này.</p>
+      <hr />
+      <p style="font-size: 12px; color: #888;">Đây là email tự động, vui lòng không trả lời.</p>
+    </div>
+  `;
+}

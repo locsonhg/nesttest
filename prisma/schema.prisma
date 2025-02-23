@@ -23,6 +23,16 @@ model User {
   updatedAt DateTime @updatedAt
   deletedAt DateTime?
   profile   Profile?
+  passwordResets PasswordReset[]
+}
+
+model PasswordReset {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  token     String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [email], references: [email], onDelete: Cascade)
 }
 
 model Post {

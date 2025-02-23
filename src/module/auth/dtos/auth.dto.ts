@@ -61,3 +61,27 @@ export class LoginUserDtoSuccess {
   data: User & { token: string; refreshToken: string };
   status: number;
 }
+
+export class BodyRequestOTP {
+  @ApiProperty({ example: 'locsonhgson@gmail.com', description: 'Email' })
+  @IsNotEmpty({ message: 'Email không được để trống' })
+  @IsEmail()
+  email: string;
+}
+
+export class BodyResetPassword {
+  @ApiProperty({ example: 'locsonhgson@gmail.com', description: 'Email' })
+  @IsNotEmpty({ message: 'Email không được để trống' })
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({ example: '123456', description: 'OTP' })
+  @IsNotEmpty({ message: 'OTP không được để trống' })
+  otp: string;
+
+  @ApiProperty({ example: 'newpassword123', description: 'Mật khẩu mới' })
+  @IsNotEmpty({ message: 'Mật khẩu mới không được để trống' })
+  @MaxLength(20, { message: 'Mật khẩu mới không được quá 20 ký tự' })
+  @MinLength(6, { message: 'Mật khẩu mới không được ít hơn 6 ký tự' })
+  newPassword: string;
+}
