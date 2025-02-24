@@ -6,6 +6,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from 'src/module/auth/auth.service';
+import { ApiOperation } from '@nestjs/swagger';
 import {
   BodyRequestOTP,
   BodyResetPassword,
@@ -24,6 +25,7 @@ export class AuthController {
 
   @Post('register')
   @UseGuards(OptionalJwtAuthGuard)
+  @ApiOperation({ summary: 'Đăng ký' })
   @ApiResponse({ status: 201, description: 'User registered successfully.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   register(@Body() userPayload: ResgisterUserDto) {
@@ -32,6 +34,7 @@ export class AuthController {
 
   @Post('login')
   @UseGuards(OptionalJwtAuthGuard)
+  @ApiOperation({ summary: 'Đăng nhập' })
   @ApiResponse({ status: 200, description: 'User logged in successfully.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   login(@Body() payload: LoginUserDto) {
@@ -39,17 +42,21 @@ export class AuthController {
   }
 
   @Post('refresh')
-  @UseGuards(OptionalJwtAuthGuard)
+  @ApiOperation({ summary: 'Refresh token' })
   async refresh(@Body() refreshToken: string) {
     return await this.authService.refreshAccessToken(refreshToken);
   }
 
   @Post('request-otp')
+  @ApiOperation({ summary: 'Tạo OTP' })
+  @UseGuards(OptionalJwtAuthGuard)
   async requestOTP(@Body() body: BodyRequestOTP) {
     return await this.authService.forgotPassword(body.email);
   }
 
   @Post('reset-password')
+  @UseGuards(OptionalJwtAuthGuard)
+  @ApiOperation({ summary: 'Đặt lại mật khẩu' })
   async resetPassword(@Body() payload: BodyResetPassword) {
     const { email, otp, newPassword } = payload;
     return await this.authService.verifyOTPAndResetPassword(
