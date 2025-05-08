@@ -43,9 +43,28 @@ export class PostService {
                 }
               : undefined,
         },
-        include: {
-          categories: true,
-          author: true,
+        select: {
+          postId: true,
+          title: true,
+          content: true,
+          published: true,
+          images: true,
+          createdAt: true,
+          accountId: true,
+          updatedAt: true,
+          deletedAt: true,
+          categories: {
+            select: {
+              categoryId: true,
+              name: true,
+            },
+          },
+          author: {
+            select: {
+              name: true,
+              userId: true,
+            },
+          },
         },
       });
 
