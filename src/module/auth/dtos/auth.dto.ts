@@ -62,6 +62,17 @@ export class LoginUserDtoSuccess {
   status: number;
 }
 
+export interface TypeRegisterSuccess {
+  message: string;
+  data: User;
+  status: number;
+}
+
+export interface TypeRegisterError {
+  message: string;
+  status: number;
+}
+
 export class BodyRequestOTP {
   @ApiProperty({ example: 'locsonhgson@gmail.com', description: 'Email' })
   @IsNotEmpty({ message: 'Email không được để trống' })

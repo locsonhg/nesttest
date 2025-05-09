@@ -4,13 +4,14 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
 import { hash, compare } from 'bcrypt';
 import * as otpGenerator from 'otp-generator';
 import {
   LoginUserDto,
   LoginUserDtoSuccess,
   ResgisterUserDto,
+  TypeRegisterError,
+  TypeRegisterSuccess,
 } from 'src/module/auth/dtos/auth.dto'; // Sửa từ Resgister thành Register
 import { JwtAuthService } from 'src/module/auth/jwtAuth.service';
 import { PrismaService } from 'src/prisma.service';
@@ -28,7 +29,9 @@ export class AuthService {
     private readonly mailService: MailService,
   ) {}
 
-  registerUser = async (userPayload: ResgisterUserDto): Promise<User> => {
+  registerUser = async (
+    userPayload: ResgisterUserDto,
+  ): Promise<TypeRegisterSuccess | TypeRegisterError> => {
     const email = userPayload.email;
 
     // Kiểm tra nếu đã tồn tại email
@@ -40,7 +43,10 @@ export class AuthService {
 
     // Đã tồn tại user với email
     if (user) {
-      throw new HttpException('Email đã tồn tại', HttpStatus.BAD_REQUEST);
+      return {
+        message: 'Email đã tồn tại',
+        status: HttpStatus.BAD_REQUEST,
+      };
     }
 
     // Hash password trước khi lưu vào db
@@ -53,7 +59,11 @@ export class AuthService {
           password: hashedPassword,
         },
       });
-      return res;
+      return {
+        message: 'Tạo tài khoản thành công',
+        data: res,
+        status: HttpStatus.OK,
+      };
     } catch (err) {
       // Ném lại ngoại lệ nếu có lỗi khi tạo người dùng
       throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
